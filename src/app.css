@@ -1,0 +1,67 @@
+html {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  height: 100%;
+}
+
+body {
+  background-color: rgb(10, 17, 51);
+}
+
+.box-main {
+
+  border-radius: 20px;
+  border-style: solid;
+  border-width: 3px;
+  border-color: rgb(54, 83, 178);
+  list-style: none;
+  margin: auto;
+  padding: 0;
+  width: 700px;
+  background-color: rgb(6, 6, 6);
+}
+
+.box-item{
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgb(153, 45, 180);
+  background-color: rgb(29, 36, 51);;
+}
+
+.box-left-section{
+  list-style: none;
+  margin: 10px;
+
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgb(178, 121, 184);
+  width: 50%;
+}
+
+.country-info{
+  color: rgb(126, 179, 218);
+  vertical-align: top;
+  margin: 0px;
+  padding: 10px;
+  list-style: none;
+  line-height: 30px;
+}
+
+.box-right-section{
+  width: 50%;
+  margin: auto;
+}
+
+.country-flag{
+  width: 120px;
+  object-fit:cover;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
