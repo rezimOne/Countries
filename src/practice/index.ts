@@ -1,16 +1,22 @@
-import './app.css';
-import { Variables, Countries, StoredData, StorageMethods } from './interface/types';
-import onLocalStorage from './service/localStorage';
-import variables from './variables';
+import "./styles.css"
+import { euCountries, populationSumCheck } from './task_2/task_2';
+import { fetchData } from "./task_1/task_1";
+import { dataFromLocalStorage } from "./shared/localStorageData";
+import appVariables from "./shared/appVariables";
 
-const { time_key, country_key } = variables;
-const { getData } = onLocalStorage;
+const { storedData, time } = dataFromLocalStorage;
+const { INTERVAL, CURRENT_TIME } = appVariables;
 
-const list = getData(country_key);
+if (!storedData || time + INTERVAL <= CURRENT_TIME) {
+  fetchData(dataFromLocalStorage, appVariables);
+};
 
 
-const dataFromStorage: StoredData = {
-  countryList: getData(country_key) ?
+
+if(dataFromLocalStorage){
+  euCountries(storedData);
+  populationSumCheck(storedData, appVariables);
+  console.log(dataFromLocalStorage);
 }
 
 
@@ -19,18 +25,3 @@ const dataFromStorage: StoredData = {
 
 
 
-
-
-
-
-
-
-
-
-const urlAPI: string = "https://restcountries.com/v2/all";
-const timeKey: string = "time";
-const countryKey: string = "countries";
-const currTime = new Date().getTime();
-const prevTime = parseInt(localStorage.getItem(timeKey));
-const interval = 10000;
-const citizensSum = 500000000;
