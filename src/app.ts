@@ -64,7 +64,7 @@ const comparePopulation = (currData: Countries[], prevData: Countries[]): string
       countriesWithPopulationChange.push(currData[i].name);
     }
   }
-  console.log('Countries with population change:', countriesWithPopulationChange);
+  // console.log('Countries with population change:', countriesWithPopulationChange);
   return countriesWithPopulationChange;
 };
 
@@ -73,7 +73,7 @@ Wywołanie funkcji fetchData po spełnieniu warunku
 */
 (!storedCountries || fetchTime + INTERVAL <= CURRENT_TIME)
 ? fetchData()
-: console.log('Countries from localStorage: ', storedCountries)
+: console.log('Countries from localStorage: ', storedCountries);
 
 /*
 Funckja countriesFromEU:
@@ -113,13 +113,13 @@ const topFiveCountriesPopulationSum = countriesPopulationSum(storedCountries);
 : console.log(`Population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`)
 
 /*
-Funkcja createObj:
+Funkcja createBlocsObj:
 Tworzy obiekt przyjmując jako parametr tablicę stringów objKeys.
 Kluczami są wartości tablicy. Dla kazdego klucza przypisuje wartość - tworzy kolejny obiekt.
 */
 const blocs: string[] = ['EU', 'AU', 'NAFTA', 'other'];
 
-const objCreate = (data: string[]): RegionalBlocs | {} => {
+const createBlocsObj = (data: string[]): RegionalBlocs | {} => {
   const obj: RegionalBlocs | {} = {};
   data.forEach((key) => {
     obj[key] = {
@@ -131,34 +131,79 @@ const objCreate = (data: string[]): RegionalBlocs | {} => {
   })
   return obj;
 };
-const newObjCountries: {} = objCreate(blocs);
+const newBlocsObj: {} = createBlocsObj(blocs);
 
 /*
-Funkcja setDataToObjCountries:
-Iteruje po tablicy blocs. Filtrując po countries (storedCountries) porównuje klucz regionName (wartość indexu tablicy) z countries.regionalBlocs.acronym.
-Po spełnieniu warunku pushuje wartości do obiektu newObjCountries. Pomija 'other'.
+Funkcja createLangObj:
+W kazdym obiekcie, dla klucza languages, przypisuje nowy obiekt
 */
-const setDataToObjCountries = (countries: Countries[]): void => {
+const createLangObj = (data: string[], countries: Countries[]): {} => {
+  data.forEach((key: string) => {
+    newBlocsObj[key].languages = {
+      [countries[0].languages[0].iso639_1]: {
+        countries: [],
+        languages: {},
+        population: 0,
+        area: 0
+      }
+    }
+  });
+  return {};
+};
+createLangObj(blocs, storedCountries);
+
+/*
+Funkcja setDataToObjBlocs:
+Iteruje po tablicy blocs. Filtrując po countries (storedCountries) porównuje klucz regionName (wartość indexu tablicy) z countries.regionalBlocs.acronym.
+Po spełnieniu warunku pushuje wartości do obiektu newBlocsObj. Pomija 'other' >>> false.
+*/
+const setDataToBlocsObj = (countries: Countries[]): void => {
   blocs.forEach((regionName) => countries.filter((country) => {
     if (country.regionalBlocs && country.regionalBlocs.find((region) => region.acronym === regionName)) {
-      newObjCountries[regionName].countries.push(country.nativeName);
-      newObjCountries[regionName].population += country.population;
+      newBlocsObj[regionName].countries.push(country.nativeName);
+      newBlocsObj[regionName].population += country.population;
 
       country.currencies.forEach((currency) => {
-        if (!newObjCountries[regionName].currencies.includes(currency.code)) {
-          newObjCountries[regionName].currencies.push(currency.code);
+        if (!newBlocsObj[regionName].currencies.includes(currency.code)) {
+          newBlocsObj[regionName].currencies.push(currency.code);
         }
       }
     )}
   }))
 };
-setDataToObjCountries(storedCountries);
-console.log(newObjCountries);
+setDataToBlocsObj(storedCountries);
+console.log(newBlocsObj);
 
 
+/*
+some fun
+*/
+const checkLanguages = (countries: Countries[]) => {
+  let someVal: any = [];
+  countries.forEach((country) => {
+    if(country.languages){
+      someVal.push(country.name + ' languages: ' + country.languages.map((language) => language.iso639_1))
+    }
+  })
+  // console.log(someVal)
+}
+checkLanguages(storedCountries);
 
 
+const keys: string[] = Object.keys(newBlocsObj);
+// console.log(keys);
 
+
+let objs = [
+  { name: 'Mike', last_name: 'Kowalski' },
+  { name: 'Peter', last_name: 'Volters' },
+  { name: 'Arnold', last_name: 'Neger' }
+];
+// console.log(
+//   objs.sort((a,b) => (a.name > b.name)
+//   ? 1
+//   : ((b.name > a.name) ? -1 : 0))
+// )
 
 
 
