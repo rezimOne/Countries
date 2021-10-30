@@ -24,33 +24,6 @@ var appVariables = {
   POPULATION_LIMIT: 500000000
 };
 
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _defineProperty)
-/* harmony export */ });
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
 /***/ })
 
 /******/ 	});
@@ -116,16 +89,14 @@ var __webpack_exports__ = {};
   !*** ./src/app.ts ***!
   \********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var _appVariables__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./appVariables */ "./src/appVariables.ts");
+/* harmony import */ var _appVariables__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./appVariables */ "./src/appVariables.ts");
 
-
-var TIME_KEY = _appVariables__WEBPACK_IMPORTED_MODULE_1__.appVariables.TIME_KEY,
-    COUNTRY_KEY = _appVariables__WEBPACK_IMPORTED_MODULE_1__.appVariables.COUNTRY_KEY,
-    API_URL = _appVariables__WEBPACK_IMPORTED_MODULE_1__.appVariables.API_URL,
-    CURRENT_TIME = _appVariables__WEBPACK_IMPORTED_MODULE_1__.appVariables.CURRENT_TIME,
-    INTERVAL = _appVariables__WEBPACK_IMPORTED_MODULE_1__.appVariables.INTERVAL,
-    POPULATION_LIMIT = _appVariables__WEBPACK_IMPORTED_MODULE_1__.appVariables.POPULATION_LIMIT;
+var TIME_KEY = _appVariables__WEBPACK_IMPORTED_MODULE_0__.appVariables.TIME_KEY,
+    COUNTRY_KEY = _appVariables__WEBPACK_IMPORTED_MODULE_0__.appVariables.COUNTRY_KEY,
+    API_URL = _appVariables__WEBPACK_IMPORTED_MODULE_0__.appVariables.API_URL,
+    CURRENT_TIME = _appVariables__WEBPACK_IMPORTED_MODULE_0__.appVariables.CURRENT_TIME,
+    INTERVAL = _appVariables__WEBPACK_IMPORTED_MODULE_0__.appVariables.INTERVAL,
+    POPULATION_LIMIT = _appVariables__WEBPACK_IMPORTED_MODULE_0__.appVariables.POPULATION_LIMIT;
 /*
 obiekt z metodami localStorage:
 getData przyjmuje parametr key będący typem string, zwraca stringa lub null.
@@ -271,49 +242,58 @@ var createBlocsObj = function createBlocsObj(data) {
 
 var newBlocsObj = createBlocsObj(blocs);
 /*
-Funkcja createLangObj:
-W kazdym obiekcie, dla klucza languages, przypisuje nowy obiekt
-*/
-
-var createLangObj = function createLangObj(data, countries) {
-  data.forEach(function (key) {
-    newBlocsObj[key].languages = (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, 'iso639_1', {
-      countries: [],
-      languages: {},
-      population: 0,
-      area: 0
-    });
-  });
-  return {};
-};
-
-createLangObj(blocs, storedCountries);
-/*
 Funkcja createRegLangList:
-Zwraca tablicę języków wybranego regionu
+Zwraca tablicę języków (ich kodów iso) iterując po blocs.
+Dla other >>> false
 */
 
-var createRegLangList = function createRegLangList(countries) {
+var createBlocsIsoLangList = function createBlocsIsoLangList(countries) {
   var iso639_1_langArr = [];
   countries.forEach(function (country) {
-    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(function (i) {
-      return i.acronym === 'EU';
-    })) {
-      var langList = country.languages;
-      iso639_1_langArr.push(langList.map(function (i) {
-        return i.iso639_1;
-      }));
+    var _loop = function _loop(j) {
+      if (country.regionalBlocs && country.languages && country.regionalBlocs.find(function (i) {
+        return i.acronym === blocs[j];
+      })) {
+        var langList = country.languages;
+        iso639_1_langArr.push(langList.map(function (i) {
+          return i.iso639_1;
+        }));
+      }
+    };
+
+    for (var j = 0; j < blocs.length; j++) {
+      _loop(j);
     }
   });
-  var allRegLang = iso639_1_langArr.flat();
-  var unigRegLang = allRegLang.filter(function (a, b) {
-    return allRegLang.indexOf(a) == b;
+  var isoCodeLangList = iso639_1_langArr.flat();
+  var uniqIsoCodeLangList = isoCodeLangList.filter(function (a, b) {
+    return isoCodeLangList.indexOf(a) == b;
   });
-  return unigRegLang;
+  return uniqIsoCodeLangList;
 };
 
-var regionalLanguages = createRegLangList(storedCountries);
-console.log(regionalLanguages);
+var isoLanguages = createBlocsIsoLangList(storedCountries);
+console.log('* isoLanguages: ', isoLanguages);
+/*
+Funkcja createLangObj:
+Dla kazdego indeksu
+*/
+
+var createLangObj = function createLangObj() {
+  var obj = {
+    countries: [],
+    languages: {},
+    population: 0,
+    area: 0
+  };
+  var newObj = Object.fromEntries(isoLanguages.map(function (key) {
+    return [key, obj];
+  }));
+  return newObj;
+};
+
+var langObj = createLangObj();
+console.log(langObj);
 /*
 Funkcja setDataToObjBlocs:
 Iteruje po tablicy blocs. Filtrując po countries (storedCountries) porównuje klucz regionName (wartość indexu tablicy) z countries.regionalBlocs.acronym.
@@ -328,6 +308,7 @@ var setDataToBlocsObj = function setDataToBlocsObj(countries) {
       })) {
         newBlocsObj[regionName].countries.push(country.nativeName);
         newBlocsObj[regionName].population += country.population;
+        newBlocsObj[regionName].languages = langObj;
         country.currencies.forEach(function (currency) {
           if (!newBlocsObj[regionName].currencies.includes(currency.code)) {
             newBlocsObj[regionName].currencies.push(currency.code);
@@ -339,27 +320,7 @@ var setDataToBlocsObj = function setDataToBlocsObj(countries) {
 };
 
 setDataToBlocsObj(storedCountries);
-console.log(newBlocsObj);
-/*
-some fun
-*/
-
-var objs = [{
-  name: 'Mike',
-  last_name: 'Kowalski'
-}, {
-  name: 'Peter',
-  last_name: 'Volters'
-}, {
-  name: 'Arnold',
-  last_name: 'Neger'
-}]; // console.log(
-//   objs.sort((a,b) => (a.name > b.name)
-//   ? 1
-//   : ((b.name > a.name) ? -1 : 0))
-// )
-
-var keys = Object.keys(newBlocsObj); // console.log(keys);
+console.log('* newBlocsObj: ', newBlocsObj);
 })();
 
 /******/ })()
