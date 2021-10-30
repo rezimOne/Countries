@@ -281,3 +281,5 @@ const placeDataInObj = (data: Countries[]) => {
 //   sortEUcountriesByPopulation(data: Countries[]): Countries[],
 //   sumCountriesByPopulation(data: Countries[]): number
 // }
+
+

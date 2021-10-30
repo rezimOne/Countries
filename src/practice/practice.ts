@@ -132,3 +132,38 @@ function padLeft(padding: number | string, input: string){
 }
 padLeft(2, '2');
 
+/*
+some fun
+*/
+let objs = [
+  { name: 'Mike', last_name: 'Kowalski' },
+  { name: 'Peter', last_name: 'Volters' },
+  { name: 'Arnold', last_name: 'Neger' }
+];
+// console.log(
+//   objs.sort((a,b) => (a.name > b.name)
+//   ? 1
+//   : ((b.name > a.name) ? -1 : 0))
+// )
+const keys: string[] = Object.keys(newBlocsObj);
+// console.log(keys);
+
+/*
+Funkcja createLangObj:
+W kazdym obiekcie, dla klucza languages, przypisuje nowy obiekt
+*/
+// const createLangObj = (data: string[]): {} => {
+//   data.forEach((key: string) => {
+//     newBlocsObj[key].languages = {
+
+//       ['iso639_1']: {
+//         countries: [],
+//         languages: {},
+//         population: 0,
+//         area: 0
+//       }
+//     }
+//   });
+//   return {};
+// };
+// createLangObj(blocs);

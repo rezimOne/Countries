@@ -150,54 +150,55 @@ const createBlocsObj = (data: string[]): RegionalBlocs | {} => {
 const newBlocsObj: {} = createBlocsObj(blocs);
 
 /*
-Funkcja createLangObj:
-W kazdym obiekcie, dla klucza languages, przypisuje nowy obiekt
-*/
-const createLangObj = (data: string[], countries: Countries[]): {} => {
-  data.forEach((key: string) => {
-    newBlocsObj[key].languages = {
-
-      ['iso639_1']: {
-        countries: [],
-        languages: {},
-        population: 0,
-        area: 0
-      }
-    }
-  });
-  return {};
-};
-createLangObj(blocs, storedCountries);
-
-/*
 Funkcja createRegLangList:
-Zwraca tablicę języków wybranego regionu
+Zwraca tablicę języków (ich kodów iso) iterując po blocs.
+Dla other >>> false
 */
-const createRegLangList = (countries: Countries[]) => {
+const createBlocsIsoLangList = (countries: Countries[]) => {
   const iso639_1_langArr: any = [];
   countries.forEach((country) => {
-    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(i => i.acronym === 'EU')) {
+    for (let j = 0; j < blocs.length; j++){
+    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(i => i.acronym === blocs[j])) {
       const langList = country.languages;
-      iso639_1_langArr.push(langList.map(i => i.iso639_1));
+      iso639_1_langArr.push(langList.map(i => i.iso639_1))
     }
+  }
   });
-  const allRegLang: [] = iso639_1_langArr.flat();
-  const unigRegLang: string[] = allRegLang.filter((a, b) => allRegLang.indexOf(a) == b)
-  return unigRegLang;
+  const isoCodeLangList: [] = iso639_1_langArr.flat();
+  const uniqIsoCodeLangList: string[] = isoCodeLangList.filter((a, b) => isoCodeLangList.indexOf(a) == b)
+  return uniqIsoCodeLangList;
 };
-const regionalLanguages = createRegLangList(storedCountries);
-console.log(regionalLanguages);
+const isoLanguages = createBlocsIsoLangList(storedCountries);
+console.log('* isoLanguages: ', isoLanguages);
+
+/*
+Funkcja createLangObj:
+Dla kazdego indeksu
+*/
+const createLangObj = () => {
+const obj = {
+  countries: [],
+  languages: {},
+  population: 0,
+  area: 0
+}
+const newObj = Object.fromEntries(isoLanguages.map(key => [key, obj]));
+return newObj;
+}
+const langObj: {} = createLangObj();
+console.log(langObj);
 
 /*
 Funkcja setDataToObjBlocs:
 Iteruje po tablicy blocs. Filtrując po countries (storedCountries) porównuje klucz regionName (wartość indexu tablicy) z countries.regionalBlocs.acronym.
 Po spełnieniu warunku pushuje wartości do obiektu newBlocsObj. Pomija 'other' >>> false.
 */
-const setDataToBlocsObj = (countries: Countries[]): void => {
+const setDataToBlocsObj = (countries: Countries[]) => {
   blocs.forEach((regionName) => countries.filter((country) => {
     if (country.regionalBlocs && country.regionalBlocs.find((region) => region.acronym === regionName)) {
       newBlocsObj[regionName].countries.push(country.nativeName);
       newBlocsObj[regionName].population += country.population;
+      newBlocsObj[regionName].languages = langObj;
 
       country.currencies.forEach((currency) => {
         if (!newBlocsObj[regionName].currencies.includes(currency.code)) {
@@ -208,25 +209,4 @@ const setDataToBlocsObj = (countries: Countries[]): void => {
   }))
 };
 setDataToBlocsObj(storedCountries);
-console.log(newBlocsObj);
-
-
-
-
-
-
-/*
-some fun
-*/
-let objs = [
-  { name: 'Mike', last_name: 'Kowalski' },
-  { name: 'Peter', last_name: 'Volters' },
-  { name: 'Arnold', last_name: 'Neger' }
-];
-// console.log(
-//   objs.sort((a,b) => (a.name > b.name)
-//   ? 1
-//   : ((b.name > a.name) ? -1 : 0))
-// )
-const keys: string[] = Object.keys(newBlocsObj);
-// console.log(keys);
+console.log('* newBlocsObj: ', newBlocsObj);
