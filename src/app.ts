@@ -1,13 +1,29 @@
-import { LocalStorageMethods, LocalStorage, Countries, RegionalBlocs } from '../src/types';
-import { appVariables } from './appVariables';
-const { TIME_KEY, COUNTRY_KEY, API_URL, CURRENT_TIME, INTERVAL, POPULATION_LIMIT } = appVariables;
+import {
+  LocalStorageMethods,
+  LocalStorage,
+  Countries,
+  RegionalBlocs
+} from '../src/types';
+
+import {
+  appVariables
+} from './appVariables';
+
+const {
+  TIME_KEY,
+  COUNTRY_KEY,
+  API_URL,
+  CURRENT_TIME,
+  INTERVAL,
+  POPULATION_LIMIT
+} = appVariables;
 
 /*
 obiekt z metodami localStorage:
 getData przyjmuje parametr key będący typem string, zwraca stringa lub null.
 setData przyjmuje parametr key typu string, value typu any i nie zwraca nic
 */
-export const localStorageMethods: LocalStorageMethods = {
+const localStorageMethods: LocalStorageMethods = {
   getData: (key) => localStorage.getItem(key),
   setData: (key, value) => localStorage.setItem(key, JSON.stringify(value))
 };
@@ -23,7 +39,7 @@ const countriesInStorage = getData(COUNTRY_KEY);
 Obiekt countriesLocalStorage:
 Przechowuje dane krajów i czas ich ostatniego pobrania z API
 */
-export const countriesLocalStorage: LocalStorage = {
+const countriesLocalStorage: LocalStorage = {
   fetchTime: Number(getData(TIME_KEY)),
   storedCountries: countriesInStorage ? JSON.parse(countriesInStorage) : null
 };
@@ -140,7 +156,8 @@ W kazdym obiekcie, dla klucza languages, przypisuje nowy obiekt
 const createLangObj = (data: string[], countries: Countries[]): {} => {
   data.forEach((key: string) => {
     newBlocsObj[key].languages = {
-      [countries[0].languages[0].iso639_1]: {
+
+      ['iso639_1']: {
         countries: [],
         languages: {},
         population: 0,
@@ -151,6 +168,25 @@ const createLangObj = (data: string[], countries: Countries[]): {} => {
   return {};
 };
 createLangObj(blocs, storedCountries);
+
+/*
+Funkcja createRegLangList:
+Zwraca tablicę języków wybranego regionu
+*/
+const createRegLangList = (countries: Countries[]) => {
+  const iso639_1_langArr: any = [];
+  countries.forEach((country) => {
+    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(i => i.acronym === 'EU')) {
+      const langList = country.languages;
+      iso639_1_langArr.push(langList.map(i => i.iso639_1));
+    }
+  });
+  const allRegLang: [] = iso639_1_langArr.flat();
+  const unigRegLang: string[] = allRegLang.filter((a, b) => allRegLang.indexOf(a) == b)
+  return unigRegLang;
+};
+const regionalLanguages = createRegLangList(storedCountries);
+console.log(regionalLanguages);
 
 /*
 Funkcja setDataToObjBlocs:
@@ -175,25 +211,13 @@ setDataToBlocsObj(storedCountries);
 console.log(newBlocsObj);
 
 
+
+
+
+
 /*
 some fun
 */
-const checkLanguages = (countries: Countries[]) => {
-  let someVal: any = [];
-  countries.forEach((country) => {
-    if(country.languages){
-      someVal.push(country.name + ' languages: ' + country.languages.map((language) => language.iso639_1))
-    }
-  })
-  // console.log(someVal)
-}
-checkLanguages(storedCountries);
-
-
-const keys: string[] = Object.keys(newBlocsObj);
-// console.log(keys);
-
-
 let objs = [
   { name: 'Mike', last_name: 'Kowalski' },
   { name: 'Peter', last_name: 'Volters' },
@@ -204,20 +228,5 @@ let objs = [
 //   ? 1
 //   : ((b.name > a.name) ? -1 : 0))
 // )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const keys: string[] = Object.keys(newBlocsObj);
+// console.log(keys);
