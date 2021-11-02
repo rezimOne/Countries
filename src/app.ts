@@ -116,7 +116,7 @@ console.log('%c * EU countries without letter "a" sorted desc: ', 'color: #CDEF3
 /*
 Suma 5 krajów o największej populacji.
 */
-const countriesPopulationSum = (countries: Countries[]): number => {
+export const countriesPopulationSum = (countries: Countries[]): number => {
   return countries
   .sort((a, b) => b.population - a.population)
   .slice(0,5)
@@ -185,7 +185,7 @@ Tworzy obiekty langObj dla kazdego languages w danym regionie.
 const createLangObj = (data: string) => {
   const langObj = {
     countries: [],
-    languages: {},
+    name: '',
     population: 0,
     area: 0
     }
@@ -214,3 +214,27 @@ const setDataToBlocsObj = (countries: Countries[]) => {
 };
 setDataToBlocsObj(storedCountries);
 console.log('%c * newBlocsObj: ', 'color: #CDEF32', newBlocsObj);
+
+/*
+set Alpha3Code practice
+*/
+let mySourceArr: string[] = ['Brasil', 'Poland', 'Danmark']
+
+const setDataToLangObj = (region: string, val?: string) => {
+  newBlocsObj[region].languages.en.countries.push(mySourceArr);
+}
+setDataToLangObj('NAFTA');
+
+let myArr: string[] = [];
+
+
+// for (let key in newBlocsObj){
+//   if(!newBlocsObj.hasOwnProperty(key)) continue;
+//     let obj = newBlocsObj[key];
+//     for (let prop in obj){
+//       if(!obj.hasOwnProperty(prop)) continue;
+
+//         console.log(prop + ' = ' + obj[prop])
+
+//     }
+// }
