@@ -100,7 +100,7 @@ var TIME_KEY = _appVariables__WEBPACK_IMPORTED_MODULE_0__.appVariables.TIME_KEY,
 /*
 obiekt z metodami localStorage:
 getData przyjmuje parametr key będący typem string, zwraca stringa lub null.
-setData przyjmuje parametr key typu string, value typu any i nie zwraca nic
+setData przyjmuje parametr key typu string, value typu any i nie zwraca nic.
 */
 
 var localStorageMethods = {
@@ -115,13 +115,13 @@ var getData = localStorageMethods.getData,
     setData = localStorageMethods.setData;
 /*
 Zmienna pomocnicza countriesInStorage:
-Argumentem w metodzie JSON.parse() musi być zmienna typu string
+Argumentem w metodzie JSON.parse() musi być zmienna typu string.
 */
 
 var countriesInStorage = getData(COUNTRY_KEY);
 /*
 Obiekt countriesLocalStorage:
-Przechowuje dane krajów i czas ich ostatniego pobrania z API
+Przechowuje dane krajów i czas ich ostatniego pobrania z API.
 */
 
 var countriesLocalStorage = {
@@ -133,14 +133,14 @@ var fetchTime = countriesLocalStorage.fetchTime,
 /*
 Funkcja fetchData:
 Pobranie danych z API.
-Wewnątrz funkcja comparePopulation
+Wewnątrz funkcja comparePopulation.
 */
 
 var fetchData = function fetchData() {
   fetch(API_URL).then(function (res) {
     return res.json();
   }).then(function (countries) {
-    console.log('Countries from fetch: ', countries);
+    console.log('%c * Countries from fetch: ', 'color: #CDEF32', countries);
     var fetchedCountries = countries;
     setData(TIME_KEY, CURRENT_TIME);
     setData(COUNTRY_KEY, fetchedCountries);
@@ -172,14 +172,14 @@ var comparePopulation = function comparePopulation(currData, prevData) {
   return countriesWithPopulationChange;
 };
 /*
-Wywołanie funkcji fetchData po spełnieniu warunku
+Wywołanie funkcji fetchData po spełnieniu warunku.
 */
 
 
-!storedCountries || fetchTime + INTERVAL <= CURRENT_TIME ? fetchData() : console.log('Countries from localStorage: ', storedCountries);
+!storedCountries || fetchTime + INTERVAL <= CURRENT_TIME ? fetchData() : console.log('%c * Countries from localStorage: ', 'color: #CDEF32', storedCountries);
 /*
 Funckja countriesFromEU:
-zwraca kraje z regionu EU
+Zwraca kraje z regionu EU.
 */
 
 var countriesFromEU = function countriesFromEU(countries) {
@@ -188,7 +188,7 @@ var countriesFromEU = function countriesFromEU(countries) {
   });
 };
 /*
-Filtrowanie zwróconych krajów EU bez litery 'a' w nazwie kraju
+Filtrowanie zwróconych krajów EU bez litery 'a' w nazwie kraju.
 */
 
 
@@ -196,15 +196,15 @@ var euCountriesWithoutLetterA = countriesFromEU(storedCountries).filter(function
   return !/a/.test(item.name);
 });
 /*
-Dalsze sortowanie krajów EU bez 'a' wg liczby populacji
+Dalsze sortowanie krajów EU bez 'a' wg liczby populacji.
 */
 
 var euCountriesSortedByPopulation = euCountriesWithoutLetterA.sort(function (a, b) {
   return b.population - a.population;
 });
-console.log('EU countries without letter "a" sorted desc: ', euCountriesSortedByPopulation);
+console.log('%c * EU countries without letter "a" sorted desc: ', 'color: #CDEF32', euCountriesSortedByPopulation);
 /*
-Suma 5 krajów o największej populacji
+Suma 5 krajów o największej populacji.
 */
 
 var countriesPopulationSum = function countriesPopulationSum(countries) {
@@ -218,7 +218,7 @@ var countriesPopulationSum = function countriesPopulationSum(countries) {
 };
 
 var topFiveCountriesPopulationSum = countriesPopulationSum(storedCountries);
-topFiveCountriesPopulationSum > POPULATION_LIMIT ? console.log("Population sum equals to ".concat(topFiveCountriesPopulationSum, " is greater than 500 mln citizens.")) : console.log("Population sum equals to ".concat(topFiveCountriesPopulationSum, " is smaller than 500 mln citizens."));
+topFiveCountriesPopulationSum > POPULATION_LIMIT ? console.log("%c * Population sum equals to ".concat(topFiveCountriesPopulationSum, " is greater than 500 mln citizens."), 'color: #CDEF32') : console.log("%c * Population sum equals to ".concat(topFiveCountriesPopulationSum, " is smaller than 500 mln citizens."), 'color: #CDEF32');
 /*
 Funkcja createBlocsObj:
 Tworzy obiekt przyjmując jako parametr tablicę stringów objKeys.
@@ -243,26 +243,22 @@ var createBlocsObj = function createBlocsObj(data) {
 var newBlocsObj = createBlocsObj(blocs);
 /*
 Funkcja createRegLangList:
-Zwraca tablicę języków (ich kodów iso) iterując po blocs.
+Zwraca tablicę języków (ich kodów iso) dla wybranego regionu. Jako parametr przyjmuje tez nazwę regionu.
 Dla other >>> false
 */
 
-var createBlocsIsoLangList = function createBlocsIsoLangList(countries) {
+var createRegLangList = function createRegLangList(countries, region) {
   var iso639_1_langArr = [];
   countries.forEach(function (country) {
-    var _loop = function _loop(j) {
+    for (var i = 0; i < blocs.length; i++) {
       if (country.regionalBlocs && country.languages && country.regionalBlocs.find(function (i) {
-        return i.acronym === blocs[j];
+        return i.acronym === region;
       })) {
         var langList = country.languages;
-        iso639_1_langArr.push(langList.map(function (i) {
-          return i.iso639_1;
+        iso639_1_langArr.push(langList.map(function (item) {
+          return item.iso639_1;
         }));
       }
-    };
-
-    for (var j = 0; j < blocs.length; j++) {
-      _loop(j);
     }
   });
   var isoCodeLangList = iso639_1_langArr.flat();
@@ -271,34 +267,39 @@ var createBlocsIsoLangList = function createBlocsIsoLangList(countries) {
   });
   return uniqIsoCodeLangList;
 };
-
-var isoLanguages = createBlocsIsoLangList(storedCountries);
-console.log('* isoLanguages: ', isoLanguages);
 /*
-Funkcja createLangObj:
-Dla kazdego indeksu
+Obiekt blocsObj:
+Wartościami kluczy są wywołania funkcji createRegLangList z podaniem nazwy regionu.
 */
 
-var createLangObj = function createLangObj() {
-  var obj = {
+
+var blocsObj = {
+  NAFTA: createRegLangList(storedCountries, 'NAFTA'),
+  EU: createRegLangList(storedCountries, 'EU'),
+  AU: createRegLangList(storedCountries, 'AU')
+};
+/*
+Funkcja createLangObj:
+Tworzy obiekty langObj dla kazdego languages w danym regionie.
+*/
+
+var createLangObj = function createLangObj(data) {
+  var langObj = {
     countries: [],
     languages: {},
     population: 0,
     area: 0
   };
-  var newObj = Object.fromEntries(isoLanguages.map(function (key) {
-    return [key, obj];
+  return Object.fromEntries(blocsObj[data].map(function (key) {
+    return [key, langObj];
   }));
-  return newObj;
 };
-
-var langObj = createLangObj();
-console.log(langObj);
 /*
 Funkcja setDataToObjBlocs:
 Iteruje po tablicy blocs. Filtrując po countries (storedCountries) porównuje klucz regionName (wartość indexu tablicy) z countries.regionalBlocs.acronym.
 Po spełnieniu warunku pushuje wartości do obiektu newBlocsObj. Pomija 'other' >>> false.
 */
+
 
 var setDataToBlocsObj = function setDataToBlocsObj(countries) {
   blocs.forEach(function (regionName) {
@@ -308,7 +309,7 @@ var setDataToBlocsObj = function setDataToBlocsObj(countries) {
       })) {
         newBlocsObj[regionName].countries.push(country.nativeName);
         newBlocsObj[regionName].population += country.population;
-        newBlocsObj[regionName].languages = langObj;
+        newBlocsObj[regionName].languages = createLangObj(regionName);
         country.currencies.forEach(function (currency) {
           if (!newBlocsObj[regionName].currencies.includes(currency.code)) {
             newBlocsObj[regionName].currencies.push(currency.code);
@@ -320,7 +321,7 @@ var setDataToBlocsObj = function setDataToBlocsObj(countries) {
 };
 
 setDataToBlocsObj(storedCountries);
-console.log('* newBlocsObj: ', newBlocsObj);
+console.log('%c * newBlocsObj: ', 'color: #CDEF32', newBlocsObj);
 })();
 
 /******/ })()

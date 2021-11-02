@@ -21,7 +21,7 @@ const {
 /*
 obiekt z metodami localStorage:
 getData przyjmuje parametr key będący typem string, zwraca stringa lub null.
-setData przyjmuje parametr key typu string, value typu any i nie zwraca nic
+setData przyjmuje parametr key typu string, value typu any i nie zwraca nic.
 */
 const localStorageMethods: LocalStorageMethods = {
   getData: (key) => localStorage.getItem(key),
@@ -31,13 +31,13 @@ const { getData, setData } = localStorageMethods;
 
 /*
 Zmienna pomocnicza countriesInStorage:
-Argumentem w metodzie JSON.parse() musi być zmienna typu string
+Argumentem w metodzie JSON.parse() musi być zmienna typu string.
 */
 const countriesInStorage = getData(COUNTRY_KEY);
 
 /*
 Obiekt countriesLocalStorage:
-Przechowuje dane krajów i czas ich ostatniego pobrania z API
+Przechowuje dane krajów i czas ich ostatniego pobrania z API.
 */
 const countriesLocalStorage: LocalStorage = {
   fetchTime: Number(getData(TIME_KEY)),
@@ -48,13 +48,13 @@ const { fetchTime, storedCountries } = countriesLocalStorage;
 /*
 Funkcja fetchData:
 Pobranie danych z API.
-Wewnątrz funkcja comparePopulation
+Wewnątrz funkcja comparePopulation.
 */
 const fetchData = () => {
   fetch(API_URL)
   .then((res) => res.json())
   .then((countries) => {
-    console.log('Countries from fetch: ', countries)
+    console.log('%c * Countries from fetch: ', 'color: #CDEF32', countries)
 
     const fetchedCountries: Countries[] = countries;
 
@@ -85,35 +85,35 @@ const comparePopulation = (currData: Countries[], prevData: Countries[]): string
 };
 
 /*
-Wywołanie funkcji fetchData po spełnieniu warunku
+Wywołanie funkcji fetchData po spełnieniu warunku.
 */
 (!storedCountries || fetchTime + INTERVAL <= CURRENT_TIME)
 ? fetchData()
-: console.log('Countries from localStorage: ', storedCountries);
+: console.log('%c * Countries from localStorage: ','color: #CDEF32', storedCountries);
 
 /*
 Funckja countriesFromEU:
-zwraca kraje z regionu EU
+Zwraca kraje z regionu EU.
 */
 const countriesFromEU = (countries: Countries[]): Countries[] => {
   return countries.filter((item) => item.regionalBlocs && item.regionalBlocs[0].acronym === 'EU')
 };
 
 /*
-Filtrowanie zwróconych krajów EU bez litery 'a' w nazwie kraju
+Filtrowanie zwróconych krajów EU bez litery 'a' w nazwie kraju.
 */
 const euCountriesWithoutLetterA: Countries[] = countriesFromEU(storedCountries)
 .filter((item) => !/a/.test(item.name));
 
 /*
-Dalsze sortowanie krajów EU bez 'a' wg liczby populacji
+Dalsze sortowanie krajów EU bez 'a' wg liczby populacji.
 */
 const euCountriesSortedByPopulation: Countries[] = euCountriesWithoutLetterA
 .sort((a, b) => b.population - a.population);
-console.log('EU countries without letter "a" sorted desc: ', euCountriesSortedByPopulation);
+console.log('%c * EU countries without letter "a" sorted desc: ', 'color: #CDEF32', euCountriesSortedByPopulation);
 
 /*
-Suma 5 krajów o największej populacji
+Suma 5 krajów o największej populacji.
 */
 const countriesPopulationSum = (countries: Countries[]): number => {
   return countries
@@ -125,8 +125,8 @@ const countriesPopulationSum = (countries: Countries[]): number => {
 const topFiveCountriesPopulationSum = countriesPopulationSum(storedCountries);
 
 (topFiveCountriesPopulationSum > POPULATION_LIMIT)
-? console.log(`Population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln citizens.`)
-: console.log(`Population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`)
+? console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln citizens.`, 'color: #CDEF32')
+: console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`, 'color: #CDEF32')
 
 /*
 Funkcja createBlocsObj:
@@ -151,16 +151,16 @@ const newBlocsObj: {} = createBlocsObj(blocs);
 
 /*
 Funkcja createRegLangList:
-Zwraca tablicę języków (ich kodów iso) iterując po blocs.
+Zwraca tablicę języków (ich kodów iso) dla wybranego regionu. Jako parametr przyjmuje tez nazwę regionu.
 Dla other >>> false
 */
-const createBlocsIsoLangList = (countries: Countries[]) => {
+const createRegLangList = (countries: Countries[], region: string) => {
   const iso639_1_langArr: any = [];
   countries.forEach((country) => {
-    for (let j = 0; j < blocs.length; j++){
-    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(i => i.acronym === blocs[j])) {
+    for (let i = 0; i < blocs.length; i++){
+    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(i => i.acronym === region)) {
       const langList = country.languages;
-      iso639_1_langArr.push(langList.map(i => i.iso639_1))
+      iso639_1_langArr.push(langList.map(item => item.iso639_1));
     }
   }
   });
@@ -168,25 +168,30 @@ const createBlocsIsoLangList = (countries: Countries[]) => {
   const uniqIsoCodeLangList: string[] = isoCodeLangList.filter((a, b) => isoCodeLangList.indexOf(a) == b)
   return uniqIsoCodeLangList;
 };
-const isoLanguages = createBlocsIsoLangList(storedCountries);
-console.log('* isoLanguages: ', isoLanguages);
+
+/*
+Obiekt blocsObj:
+Wartościami kluczy są wywołania funkcji createRegLangList z podaniem nazwy regionu.
+*/
+const blocsObj = {
+  NAFTA: createRegLangList(storedCountries, 'NAFTA'),
+  EU: createRegLangList(storedCountries, 'EU'),
+  AU: createRegLangList(storedCountries, 'AU'),
+}
 
 /*
 Funkcja createLangObj:
-Dla kazdego indeksu
+Tworzy obiekty langObj dla kazdego languages w danym regionie.
 */
-const createLangObj = () => {
-const obj = {
-  countries: [],
-  languages: {},
-  population: 0,
-  area: 0
+const createLangObj = (data: string) => {
+  const langObj = {
+    countries: [],
+    languages: {},
+    population: 0,
+    area: 0
+    }
+  return Object.fromEntries(blocsObj[data].map((key: string) => [key, langObj]));
 }
-const newObj = Object.fromEntries(isoLanguages.map(key => [key, obj]));
-return newObj;
-}
-const langObj: {} = createLangObj();
-console.log(langObj);
 
 /*
 Funkcja setDataToObjBlocs:
@@ -198,7 +203,7 @@ const setDataToBlocsObj = (countries: Countries[]) => {
     if (country.regionalBlocs && country.regionalBlocs.find((region) => region.acronym === regionName)) {
       newBlocsObj[regionName].countries.push(country.nativeName);
       newBlocsObj[regionName].population += country.population;
-      newBlocsObj[regionName].languages = langObj;
+      newBlocsObj[regionName].languages = createLangObj(regionName);
 
       country.currencies.forEach((currency) => {
         if (!newBlocsObj[regionName].currencies.includes(currency.code)) {
@@ -209,4 +214,4 @@ const setDataToBlocsObj = (countries: Countries[]) => {
   }))
 };
 setDataToBlocsObj(storedCountries);
-console.log('* newBlocsObj: ', newBlocsObj);
+console.log('%c * newBlocsObj: ', 'color: #CDEF32', newBlocsObj);
