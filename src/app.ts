@@ -2,12 +2,13 @@ import {
   LocalStorageMethods,
   LocalStorage,
   Countries,
-  RegionalBlocs
+  RegionalBlocs,
+  BlocsObj
 } from '../src/types';
 
 import {
   appVariables
-} from './appVariables';
+} from '../src/appVariables'
 
 const {
   TIME_KEY,
@@ -171,7 +172,7 @@ const createRegLangList = (countries: Countries[], region: string) => {
 Obiekt blocsObj:
 Wartościami kluczy są wywołania funkcji createRegLangList z podaniem nazwy regionu.
 */
-const blocsObj = {
+const blocsObj: BlocsObj = {
   NAFTA: createRegLangList(storedCountries, 'NAFTA'),
   EU: createRegLangList(storedCountries, 'EU'),
   AU: createRegLangList(storedCountries, 'AU'),

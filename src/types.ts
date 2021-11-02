@@ -49,3 +49,9 @@ export interface RegionalBlocs {
   other: CountriesByRegion;
 }
 
+export interface BlocsObj {
+  EU: string[];
+  AU: string[];
+  NAFTA: string[];
+}
+

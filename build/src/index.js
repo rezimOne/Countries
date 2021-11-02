@@ -250,15 +250,13 @@ Dla other >>> false
 var createRegLangList = function createRegLangList(countries, region) {
   var iso639_1_langArr = [];
   countries.forEach(function (country) {
-    for (var i = 0; i < blocs.length; i++) {
-      if (country.regionalBlocs && country.languages && country.regionalBlocs.find(function (i) {
-        return i.acronym === region;
-      })) {
-        var langList = country.languages;
-        iso639_1_langArr.push(langList.map(function (item) {
-          return item.iso639_1;
-        }));
-      }
+    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(function (item) {
+      return item.acronym === region;
+    })) {
+      var langList = country.languages;
+      iso639_1_langArr.push(langList.map(function (item) {
+        return item.iso639_1;
+      }));
     }
   });
   var isoCodeLangList = iso639_1_langArr.flat();
