@@ -157,11 +157,9 @@ Dla other >>> false
 const createRegLangList = (countries: Countries[], region: string) => {
   const iso639_1_langArr: any = [];
   countries.forEach((country) => {
-    for (let i = 0; i < blocs.length; i++){
-    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(i => i.acronym === region)) {
+    if (country.regionalBlocs && country.languages && country.regionalBlocs.find(item => item.acronym === region)) {
       const langList = country.languages;
       iso639_1_langArr.push(langList.map(item => item.iso639_1));
-    }
   }
   });
   const isoCodeLangList: [] = iso639_1_langArr.flat();
