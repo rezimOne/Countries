@@ -1,3 +1,4 @@
+
 import {
   LocalStorageMethods,
   LocalStorage,
@@ -111,7 +112,7 @@ Dalsze sortowanie krajów EU bez 'a' wg liczby populacji.
 */
 const euCountriesSortedByPopulation: Countries[] = euCountriesWithoutLetterA
 .sort((a, b) => b.population - a.population);
-console.log('%c * EU countries without letter "a" sorted desc: ', 'color: #CDEF32', euCountriesSortedByPopulation);
+// console.log('%c * EU countries without letter "a" sorted desc: ', 'color: #CDEF32', euCountriesSortedByPopulation);
 
 /*
 Suma 5 krajów o największej populacji.
@@ -125,9 +126,9 @@ export const countriesPopulationSum = (countries: Countries[]): number => {
 }
 const topFiveCountriesPopulationSum = countriesPopulationSum(storedCountries);
 
-(topFiveCountriesPopulationSum > POPULATION_LIMIT)
-? console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln citizens.`, 'color: #CDEF32')
-: console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`, 'color: #CDEF32')
+// (topFiveCountriesPopulationSum > POPULATION_LIMIT)
+// ? console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln citizens.`, 'color: #CDEF32')
+// : console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`, 'color: #CDEF32')
 
 /*
 Funkcja createBlocsObj:
@@ -182,14 +183,14 @@ const blocsObj: BlocsObj = {
 Funkcja createLangObj:
 Tworzy obiekty langObj dla kazdego languages w danym regionie.
 */
-const createLangObj = (data: string) => {
+const createLangObj = (region: string) => {
   const langObj = {
     countries: [],
     name: '',
     population: 0,
     area: 0
     }
-  return Object.fromEntries(blocsObj[data].map((key: string) => [key, langObj]));
+  return Object.fromEntries(blocsObj[region].map((key: string) => [key, langObj]));
 }
 
 /*
@@ -208,24 +209,112 @@ const setDataToBlocsObj = (countries: Countries[]) => {
         if (!newBlocsObj[regionName].currencies.includes(currency.code)) {
           newBlocsObj[regionName].currencies.push(currency.code);
         }
-      }
-    )}
-  }))
+      });
+    }
+  }
+  ));
+
+  blocs.forEach((regionName) => {
+    if(regionName !== 'other'){
+      console.log(regionName, newBlocsObj[regionName].languages.fr.countries.push('xx', 'cc'));
+    }
+  });
+
 };
 setDataToBlocsObj(storedCountries);
 console.log('%c * newBlocsObj: ', 'color: #CDEF32', newBlocsObj);
 
+
+
 /*
-set Alpha3Code practice
+some functions
 */
-let mySourceArr: string[] = ['Brasil', 'Poland', 'Danmark']
 
-const setDataToLangObj = (region: string, val?: string) => {
-  newBlocsObj[region].languages.en.countries.push(mySourceArr);
-}
-setDataToLangObj('NAFTA');
+// const getDataFromCountries = (countries: Countries[], region: string, code: string) => {
+//   const regLangKeysArr = Object.keys(newBlocsObj[region].languages);
+//   console.log('regLangKeysArr: ', regLangKeysArr);
 
-let myArr: string[] = [];
+//   let myArr: string[]= [];
+//   countries.forEach(country => {
+//     if(country.regionalBlocs && country.regionalBlocs.find((item) => item.acronym === region)){
+//       country.languages.forEach(isoCode => {
+//         if(isoCode.iso639_1 === code){
+//           newBlocsObj[region].languages[code].countries.push(country.name);
+//         }
+//       });
+//     }
+//   });
+
+//   let myUniqArr: string[] = myArr.filter((a, b) => myArr.indexOf(a) == b)
+//   console.log('Countries of isoCode: ', myUniqArr);
+// }
+// getDataFromCountries(storedCountries, 'NAFTA', 'en');
+
+
+
+  // if(newBlocsObj['EU'].languages && country.languages){
+      // country.languages.forEach(isoCode => {
+      //   if(isoCode.iso639_1 === 'en'){
+      //     newBlocsObj['EU'].languages['en'].countries.push(country.name);
+      //   }
+      // });
+      // }
+
+// let myRegLangArr = Object.keys(newBlocsObj['NAFTA'].languages);
+// console.log(myRegLangArr);
+
+// myRegLangArr.forEach((key) => {
+//   console.log(`${key}: ${newBlocsObj['NAFTA'].languages[key]}`);
+// });
+
+//Object.keys(), Object.values(), Object.entries
+
+// console.log('Object.keys(): ', Object.keys(newBlocsObj));
+// console.log('Object.values(): ', Object.values(newBlocsObj));
+// console.log('Object.entries(): ', Object.entries(newBlocsObj));
+
+// let myObj = Object.entries(newBlocsObj['NAFTA'].languages);
+// for(const [key, value] of myObj){
+//   console.log(`${key}: ${value}`)
+// }
+
+// let myObject = {
+//   djQbert: {
+//     musicGenres: [],
+//     scraches: []
+//   },
+//   djVadim: {
+//     musicGenres: [],
+//     scratches: []
+//   }
+// }
+
+// console.log(myObject)
+
+// let myObjectKeys = Object.keys(myObject);
+// console.log(myObjectKeys);
+
+// let x = myObject.djQbert.musicGenres
+
+
+// console.log(newBlocsObj['NAFTA'].languages.en);
+// console.log(newBlocsObj['NAFTA'].languages.en.countries);
+// console.log(newBlocsObj['NAFTA'].languages.en.countries.push('zzz'));
+
+
+// const myFun = (data: string[]) => {
+// let objValue: any[][] = [];
+// data.forEach((item) => {
+//   let myVal = newBlocsObj[item].languages;
+//   objValue.push(Object.values(myVal))
+//   return objValue;
+// });
+// console.log(objValue)
+// }
+// myFun(blocs);
+
+
+
 
 
 // for (let key in newBlocsObj){
