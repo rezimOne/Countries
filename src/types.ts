@@ -16,7 +16,7 @@ export interface Countries {
   name: string;
   nativeName: string;
   population: number;
-  aplpha3Code: string;
+  alpha3Code: string;
   regionalBlocs: { acronym: string }[];
   currencies: { code: string }[];
   languages: { iso639_1: string, nativeName: string }[];
