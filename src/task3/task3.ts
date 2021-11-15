@@ -295,7 +295,7 @@ for (let [key, val] of Object.entries(regionNumberOfCurrenciesObj)){
   if(val === Math.max(...numberOfCurrencies)){
     regionWithMaxNumberOfCurrencies = key;
   }
-}
+};
 
 export let regionWithMinNumberOfCountries: string = '';
 for (let [key, val] of Object.entries(regionNumberOfCountries)){
@@ -303,7 +303,7 @@ for (let [key, val] of Object.entries(regionNumberOfCountries)){
   if(val === Math.min(...numberOfCountries)){
     regionWithMinNumberOfCountries = key;
   }
-}
+};
 
 export let mostPopularLanguageByCountries: string = '';
 for (let [key, val] of Object.entries(languageNumberOfCountriesObj)){
@@ -319,7 +319,7 @@ for (let [key, val] of Object.entries(languagePopulationObj)){
   if(val === Math.min(...populationNumber)){
     lessPopularLanguageByPeople = key;
   }
-}
+};
 
 export const languagesOnMinMaxAreas: string[] = [];
 for(let [key, val] of Object.entries(languageAreaObj)){

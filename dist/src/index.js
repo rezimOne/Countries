@@ -107,7 +107,9 @@ __webpack_require__.r(__webpack_exports__);
 var storedCountries = _task1_task1__WEBPACK_IMPORTED_MODULE_0__.countriesLocalStorage.storedCountries;
 var countriesFromEU = function countriesFromEU(countries) {
   return countries.filter(function (item) {
-    return item.regionalBlocs && item.regionalBlocs[0].acronym === 'EU';
+    return item.regionalBlocs && item.regionalBlocs.find(function (el) {
+      return el.acronym === 'EU';
+    });
   });
 };
 var euCountriesWithoutLetterA = countriesFromEU(storedCountries).filter(function (item) {
@@ -516,6 +518,7 @@ for (var _i10 = 0, _Object$entries9 = Object.entries(regionNumberOfCurrenciesObj
   }
 }
 
+;
 var regionWithMinNumberOfCountries = '';
 
 for (var _i11 = 0, _Object$entries10 = Object.entries(regionNumberOfCountries); _i11 < _Object$entries10.length; _i11++) {
@@ -530,6 +533,7 @@ for (var _i11 = 0, _Object$entries10 = Object.entries(regionNumberOfCountries); 
   }
 }
 
+;
 var mostPopularLanguageByCountries = '';
 
 for (var _i12 = 0, _Object$entries11 = Object.entries(languageNumberOfCountriesObj); _i12 < _Object$entries11.length; _i12++) {
@@ -559,6 +563,7 @@ for (var _i13 = 0, _Object$entries12 = Object.entries(languagePopulationObj); _i
   }
 }
 
+;
 var languagesOnMinMaxAreas = [];
 
 for (var _i14 = 0, _Object$entries13 = Object.entries(languageAreaObj); _i14 < _Object$entries13.length; _i14++) {

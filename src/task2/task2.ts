@@ -4,7 +4,7 @@ import { countriesLocalStorage } from '../task1/task1';
 const { storedCountries } = countriesLocalStorage;
 
 export const countriesFromEU = (countries: Countries[]): Countries[] => {
-  return countries.filter((item) => item.regionalBlocs && item.regionalBlocs[0].acronym === 'EU')
+  return countries.filter((item) => item.regionalBlocs && item.regionalBlocs.find(el => el.acronym === 'EU'))
 };
 
 const euCountriesWithoutLetterA: Countries[] = countriesFromEU(storedCountries)
