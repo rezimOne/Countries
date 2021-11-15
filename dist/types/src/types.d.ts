@@ -14,7 +14,7 @@ export interface Countries {
     name: string;
     nativeName: string;
     population: number;
-    aplpha3Code: string;
+    alpha3Code: string;
     regionalBlocs: {
         acronym: string;
     }[];
@@ -49,9 +49,4 @@ export interface RegionalBlocs {
     AU: CountriesByRegion;
     NAFTA: CountriesByRegion;
     other: CountriesByRegion;
-}
-export interface BlocsObj {
-    EU: string[];
-    AU: string[];
-    NAFTA: string[];
 }

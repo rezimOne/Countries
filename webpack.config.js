@@ -5,10 +5,10 @@ const path = require('path');
 module.exports = {
   mode: "development",
   devtool: 'cheap-module-source-map',
-  entry: './src/app.ts',
+  entry: './src/index.ts',
   output: {
     filename: './src/index.js',
-    path: path.resolve(__dirname, 'build')
+    path: path.resolve(__dirname, 'dist')
   },
   optimization: {
     minimize: false,

@@ -9,7 +9,6 @@ import {
 import {
   appVariables
 } from '../src/appVariables'
-import { resolvePreset } from '@babel/core';
 
 const {
   TIME_KEY,
@@ -68,8 +67,7 @@ const fetchData = () => {
     }
   })
   .catch((err) => console.log(err));
-}
-
+};
 /*
 Funkcja comparePopulation:
 Porównuje dane krajów z localStorage i z fetch pod względem zmian populacji. Jezeli w danych z fetch populacja się
@@ -98,7 +96,7 @@ Funckja countriesFromEU:
 Zwraca kraje z regionu EU.
 */
 const countriesFromEU = (countries: Countries[]): Countries[] => {
-  return countries.filter((item) => item.regionalBlocs && item.regionalBlocs[0].acronym === 'EU')
+  return countries.filter((item) => item.regionalBlocs && item.regionalBlocs[0].acronym === 'EU');
 };
 
 /*
@@ -123,17 +121,17 @@ export const countriesPopulationSum = (countries: Countries[]): number => {
   .slice(0,5)
   .map((item) => item.population)
   .reduce((a, b) => a + b);
-}
+};
 const topFiveCountriesPopulationSum = countriesPopulationSum(storedCountries);
 
 //(topFiveCountriesPopulationSum > POPULATION_LIMIT)
-//? console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln citizens.`, 'color: #EC18CF')
-//: console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`, 'color: #EC18CF')
+//? console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln citizens.`, 'color: #EC18CF');
+//: console.log(`%c * Population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`, 'color: #EC18CF');
 
 /*
 Funkcja createRegionObj:
 Tworzy obiekt przyjmując jako parametr tablicę regionAcronym.
-Kluczami są wartości tablicy. Dla kazdego klucza przypisuje wartość - tworzy kolejny obiekt.
+Kluczami są wartości tablicy. Dla kazdego klucza przypisuje obiekt.
 */
 const regionAcronyms: string[] = ['EU', 'AU', 'NAFTA', 'other'];
 
@@ -276,31 +274,31 @@ const setDataToRegionObj = (countries: Countries[]) => {
     }
   }
   );
-}
-setDataToRegionObj(storedCountries)
+};
+setDataToRegionObj(storedCountries);
 console.log('%c * Region object: ', 'color: #CDEF32', regionObj);
 
 /*
-Obiekt {region: area}
+Obiekt {region: obszar}
 */
 const regionAreaObj = {};
-const countryArea: {}[] = [];
+const regionCountryArea: {}[] = [];
 storedCountries.forEach((country) => {
   if(country.regionalBlocs && country.area){
     for(let i=0; i < country.regionalBlocs.length; i++){
       for (let key of Object.keys(regionObj)){
         if (country.regionalBlocs[i].acronym === key && key !== 'other') {
-          countryArea.push({[key]: country.area})
+          regionCountryArea.push({[key]: country.area})
         }
       }
     }
   }
 });
-countryArea.forEach(item => {
+regionCountryArea.forEach(item => {
   for (let [key, val] of Object.entries(item)) {
     (regionAreaObj[key]) ? regionAreaObj[key] += val: regionAreaObj[key] = val
-    }
-  });
+  }
+});
 
 /*
 Obiekt {region: populacja}
@@ -324,7 +322,7 @@ const regionDensity = (...objs: any) => {
       }
     }
   });
-}
+};
 regionDensity(regionPopulationObj, regionAreaObj);
 
 /*
@@ -336,6 +334,7 @@ for (let [key, value] of Object.entries(regionObj)){
     regionNumberOfLanguagesObj[key] = Object.keys(value.languages).length;
   }
 };
+
 /*
 Obiekt {region: liczba walut}
 */
@@ -356,6 +355,60 @@ for (let [key, value] of Object.entries(regionObj)){
   }
 };
 
+/*
+Obiekt {natywna nazwa języka: liczba krajów}
+*/
+const languageNumberOfCountriesObj: {} = {};
+Object.entries(regionObj).forEach((item: any) => {
+  if (item[0] !== 'other') {
+    let languagesList: any = Object.values(item[1].languages);
+    for (let i = 0; i < languagesList.length; i++) {
+      languageNumberOfCountriesObj[languagesList[i].name] = languagesList[i].countries.length;
+    }
+  }
+});
+
+/*
+Obiekt {natywna nazwa języka: populacja}
+*/
+const languagePopulationObj: {} = {};
+const languagePopulation: any[] = [];
+Object.entries(regionObj).forEach((item) => {
+  if (item[0] !== 'other') {
+    let languagesList: any = Object.values(item[1].languages);
+    for (let i = 0; i < languagesList.length; i++) {
+      if(languagesList[i].population){
+        languagePopulation.push({[languagesList[i].name]: languagesList[i].population});
+      }
+    }
+  }
+});
+languagePopulation.forEach(item => {
+  for (let [key, val] of Object.entries(item)) {
+    (languagePopulationObj[key]) ? languagePopulationObj[key] += val: languagePopulationObj[key] = val;
+  }
+});
+
+/*
+Obiekt {natywna nazwa języka: obszar kraju}
+*/
+const languageAreaObj: {} = {};
+const languageArea: any[] = [];
+Object.entries(regionObj).forEach((item) => {
+  if (item[0] !== 'other') {
+    let languagesList: any = Object.values(item[1].languages);
+    for (let i = 0; i < languagesList.length; i++) {
+      if(languagesList[i].area){
+        languageArea.push({[languagesList[i].name]: languagesList[i].area});
+      }
+    }
+  }
+});
+languageArea.forEach(item => {
+  for (let [key, val] of Object.entries(item)) {
+    (languageAreaObj[key]) ? languageAreaObj[key] += val: languageAreaObj[key] = val;
+  }
+});
 
 /*
 Organizacja o największej populacji.
@@ -400,7 +453,7 @@ for (let [key, val] of Object.entries(regionNumberOfCurrenciesObj)){
 console.log('%c * Region with max number of currencies: ', 'color: #CDEF32', regionWithMaxNumberOfCurrencies);
 
 /*
-Organizacja z największą liczbą pańśtw członkowskich.
+Organizacja z najmniejszą liczbą pańśtw członkowskich.
 */
 let regionWithMinNumberOfCountries: string = '';
 for (let [key, val] of Object.entries(regionNumberOfCountries)){
@@ -412,15 +465,37 @@ for (let [key, val] of Object.entries(regionNumberOfCountries)){
 console.log('%c * Region with min number of countries: ', 'color: #CDEF32', regionWithMinNumberOfCountries);
 
 /*
-Natywna nazwa języka uzywanego w największej liczbie krajów
+Natywna nazwa języka uzywanego w największej liczbie krajów.
 */
-let myArr: {} = {};
-Object.entries(regionObj).forEach((item: any) => {
-  if (item[0] !== 'other') {
-    let myVal: any = Object.values(item[1].languages);
-    for (let i = 0; i < myVal.length; i++) {
-      myArr[myVal[i].name] = myVal[i].countries;
-    }
+let mostPopularLanguageByCountries: string = '';
+for (let [key, val] of Object.entries(languageNumberOfCountriesObj)){
+  let languageCountriesNumber: number[] = Object.values(languageNumberOfCountriesObj);
+  if(val === Math.max(...languageCountriesNumber)){
+    mostPopularLanguageByCountries = key;
   }
-});
-console.log(myArr)
+};
+console.log('%c * The most popular language by countries is: ', 'color: #CDEF32', mostPopularLanguageByCountries);
+
+/*
+Natywna nazwa języka uzywanego przez najmniejszą liczbę ludzi.
+*/
+let lessPopularLanguageByPeople: string = '';
+for (let [key, val] of Object.entries(languagePopulationObj)){
+  let populationNumber: number[] = Object.values(languagePopulationObj);
+  if(val === Math.min(...populationNumber)){
+    lessPopularLanguageByPeople = key;
+  }
+}
+console.log('%c * The less popular language by population is: ', 'color: #CDEF32', lessPopularLanguageByPeople);
+
+/*
+Nazwy języków uzywanych na największym i najmnijeszym obszarze.
+*/
+const languagesOnMinMaxAreas: string[] = [];
+for(let [key, val] of Object.entries(languageAreaObj)){
+  let areaOfLanguages: number[] = Object.values(languageAreaObj);
+  if(val === Math.max(...areaOfLanguages) || val === Math.min(...areaOfLanguages)){
+    languagesOnMinMaxAreas.push(key);
+  }
+};
+console.log('%c * Languages of max & min area: ', 'color: #CDEF32', languagesOnMinMaxAreas);
