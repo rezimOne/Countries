@@ -21,7 +21,19 @@ var appVariables = {
   COUNTRY_KEY: "countries",
   CURRENT_TIME: new Date().getTime(),
   INTERVAL: 100000,
-  POPULATION_LIMIT: 500000000
+  POPULATION_LIMIT: 500000000 // regionObjKeyVal: {
+  //   countries: [],
+  //   currencies: [],
+  //   languages: {},
+  //   population: 0
+  // },
+  // languagesObjKeyVal:{
+  //   name: '',
+  //   countries: [],
+  //   population: 0,
+  //   area: 0
+  // }
+
 };
 
 /***/ }),
@@ -161,7 +173,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var storedCountries = _task1_task1__WEBPACK_IMPORTED_MODULE_3__.countriesLocalStorage.storedCountries;
-var regionAcronyms = ['EU', 'AU', 'NAFTA', 'other'];
+var regionObjKeys = ['EU', 'AU', 'NAFTA', 'other'];
 
 var createRegionObj = function createRegionObj(data) {
   var obj = {};
@@ -176,122 +188,65 @@ var createRegionObj = function createRegionObj(data) {
   return obj;
 };
 
-var regionObj = createRegionObj(regionAcronyms);
+var regionObj = createRegionObj(regionObjKeys);
+/*
+Funkcja dataTransferToRegionObj:
+metody do wypełniania obiektu danymi
+*/
+
+var dataTransferToRegionObj = function dataTransferToRegionObj(param, country) {
+  regionObj[param].countries.push(country.nativeName);
+  regionObj[param].countries.sort().reverse();
+  regionObj[param].population += country.population;
+
+  if (country.currencies) {
+    country.currencies.forEach(function (countryCurrency) {
+      if (countryCurrency.code) if (!regionObj[param].currencies.includes(countryCurrency.code)) {
+        regionObj[param].currencies.push(countryCurrency.code);
+      }
+    });
+  }
+
+  country.languages.forEach(function (countryLang) {
+    if (countryLang.iso639_1) {
+      if (!regionObj[param].languages[countryLang.iso639_1]) {
+        regionObj[param].languages[countryLang.iso639_1] = {
+          countries: [],
+          name: '',
+          population: 0,
+          area: 0
+        };
+      }
+
+      regionObj[param].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
+      regionObj[param].languages[countryLang.iso639_1].population += country.population;
+      regionObj[param].languages[countryLang.iso639_1].area += country.area;
+      regionObj[param].languages[countryLang.iso639_1].name = countryLang.nativeName;
+    }
+  });
+};
+/*
+Funkcja setDataToRegionObj:
+Steruje w jaki sposob ma być wypełniony regionObj (dane krajów dla wybranego regionu oraz klucza 'other')
+*/
+
 
 var setDataToRegionObj = function setDataToRegionObj(countries) {
   countries.forEach(function (country) {
     if (country.regionalBlocs) {
-      for (var i = 0; i < country.regionalBlocs.length; i++) {
-        if (country.regionalBlocs[i].acronym === 'EU') {
-          regionObj['EU'].countries.push(country.nativeName);
-          regionObj['EU'].countries.sort().reverse();
-          regionObj['EU'].population += country.population;
-          country.currencies.forEach(function (countryCurrency) {
-            if (countryCurrency.code) if (!regionObj['EU'].currencies.includes(countryCurrency.code)) {
-              regionObj['EU'].currencies.push(countryCurrency.code);
-            }
-          });
-          country.languages.forEach(function (countryLang) {
-            if (countryLang.iso639_1) {
-              if (!regionObj['EU'].languages[countryLang.iso639_1]) {
-                regionObj['EU'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                };
-              }
+      country.regionalBlocs.forEach(function (item) {
+        regionObjKeys.forEach(function (region) {
+          if (region !== 'other' && region === item.acronym) {
+            dataTransferToRegionObj(region, country);
+          }
+        });
 
-              regionObj['EU'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['EU'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['EU'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['EU'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
+        if (item.acronym !== 'EU' && item.acronym !== 'NAFTA' && item.acronym !== 'AU') {
+          dataTransferToRegionObj('other', country);
         }
-
-        if (country.regionalBlocs[i].acronym === 'NAFTA') {
-          regionObj['NAFTA'].countries.push(country.nativeName);
-          regionObj['NAFTA'].countries.sort().reverse();
-          regionObj['NAFTA'].population += country.population;
-          country.currencies.forEach(function (countryCurrency) {
-            if (countryCurrency.code) if (!regionObj['NAFTA'].currencies.includes(countryCurrency.code)) {
-              regionObj['NAFTA'].currencies.push(countryCurrency.code);
-            }
-          });
-          country.languages.forEach(function (countryLang) {
-            if (countryLang.iso639_1) {
-              if (!regionObj['NAFTA'].languages[countryLang.iso639_1]) {
-                regionObj['NAFTA'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                };
-              }
-
-              regionObj['NAFTA'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['NAFTA'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['NAFTA'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['NAFTA'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
-        }
-
-        if (country.regionalBlocs[i].acronym === 'AU') {
-          regionObj['AU'].countries.push(country.nativeName);
-          regionObj['AU'].countries.sort().reverse();
-          regionObj['AU'].population += country.population;
-          country.currencies.forEach(function (countryCurrency) {
-            if (countryCurrency.code) if (!regionObj['AU'].currencies.includes(countryCurrency.code)) {
-              regionObj['AU'].currencies.push(countryCurrency.code);
-            }
-          });
-          country.languages.forEach(function (countryLang) {
-            if (countryLang.iso639_1) {
-              if (!regionObj['AU'].languages[countryLang.iso639_1]) {
-                regionObj['AU'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                };
-              }
-
-              regionObj['AU'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['AU'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['AU'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['AU'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
-        } else if (country.regionalBlocs[i].acronym !== 'AU' && country.regionalBlocs[i].acronym !== 'EU' && country.regionalBlocs[i].acronym !== 'NAFTA') {
-          regionObj['other'].countries.push(country.nativeName);
-          regionObj['other'].countries.sort().reverse();
-          regionObj['other'].population += country.population;
-          country.currencies.forEach(function (countryCurrency) {
-            if (countryCurrency.code) if (!regionObj['other'].currencies.includes(countryCurrency.code)) {
-              regionObj['other'].currencies.push(countryCurrency.code);
-            }
-          });
-          country.languages.forEach(function (countryLang) {
-            if (countryLang.iso639_1) {
-              if (!regionObj['other'].languages[countryLang.iso639_1]) {
-                regionObj['other'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                };
-              }
-
-              regionObj['other'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['other'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['other'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['other'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
-        }
-      }
+      });
+    } else if (!country.regionalBlocs) {
+      dataTransferToRegionObj('other', country);
     }
   });
 };
@@ -364,10 +319,15 @@ var regionDensity = function regionDensity() {
 
 regionDensity(regionPopulationObj, regionAreaObj);
 /*
-Obiekt {region: liczba języków}
+Obiekty:
+{region: liczba języków}
+{region: liczba państw członkowskich}
+{region: liczba walut}
 */
 
 var regionNumberOfLanguagesObj = {};
+var regionNumberOfCountries = {};
+var regionNumberOfCurrenciesObj = {};
 
 for (var _i4 = 0, _Object$entries3 = Object.entries(regionObj); _i4 < _Object$entries3.length; _i4++) {
   var _Object$entries3$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries3[_i4], 2),
@@ -376,88 +336,22 @@ for (var _i4 = 0, _Object$entries3 = Object.entries(regionObj); _i4 < _Object$en
 
   if (_key3 !== 'other') {
     regionNumberOfLanguagesObj[_key3] = Object.keys(_value.languages).length;
+    regionNumberOfCurrenciesObj[_key3] = Object.keys(_value.currencies).length;
+    regionNumberOfCountries[_key3] = Object.keys(_value.countries).length;
   }
 }
 
 ;
 /*
-Obiekt {region: liczba walut}
-*/
-
-var regionNumberOfCurrenciesObj = {};
-
-for (var _i5 = 0, _Object$entries4 = Object.entries(regionObj); _i5 < _Object$entries4.length; _i5++) {
-  var _Object$entries4$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries4[_i5], 2),
-      _key4 = _Object$entries4$_i[0],
-      _value2 = _Object$entries4$_i[1];
-
-  if (_key4 !== 'other') {
-    regionNumberOfCurrenciesObj[_key4] = Object.keys(_value2.currencies).length;
-  }
-}
-
-;
-/*
-Obiekt {region: liczba państw członkowskich}
-*/
-
-var regionNumberOfCountries = {};
-
-for (var _i6 = 0, _Object$entries5 = Object.entries(regionObj); _i6 < _Object$entries5.length; _i6++) {
-  var _Object$entries5$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries5[_i6], 2),
-      _key5 = _Object$entries5$_i[0],
-      _value3 = _Object$entries5$_i[1];
-
-  if (_key5 !== 'other') {
-    regionNumberOfCountries[_key5] = Object.keys(_value3.countries).length;
-  }
-}
-
-;
-/*
-Obiekt {natywna nazwa języka: liczba krajów}
+Obiekty:
+{natywna nazwa języka: liczba krajów}
+{natywna nazwa języka: populacja}
+{natywna nazwa języka: obszar kraju}
 */
 
 var languageNumberOfCountriesObj = {};
-Object.entries(regionObj).forEach(function (item) {
-  if (item[0] !== 'other') {
-    var languagesList = Object.values(item[1].languages);
-
-    for (var i = 0; i < languagesList.length; i++) {
-      languageNumberOfCountriesObj[languagesList[i].name] = languagesList[i].countries.length;
-    }
-  }
-});
-/*
-Obiekt {natywna nazwa języka: populacja}
-*/
-
 var languagePopulationObj = {};
 var languagePopulation = [];
-Object.entries(regionObj).forEach(function (item) {
-  if (item[0] !== 'other') {
-    var languagesList = Object.values(item[1].languages);
-
-    for (var i = 0; i < languagesList.length; i++) {
-      if (languagesList[i].population) {
-        languagePopulation.push((0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])({}, languagesList[i].name, languagesList[i].population));
-      }
-    }
-  }
-});
-languagePopulation.forEach(function (item) {
-  for (var _i7 = 0, _Object$entries6 = Object.entries(item); _i7 < _Object$entries6.length; _i7++) {
-    var _Object$entries6$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries6[_i7], 2),
-        _key6 = _Object$entries6$_i[0],
-        val = _Object$entries6$_i[1];
-
-    languagePopulationObj[_key6] ? languagePopulationObj[_key6] += val : languagePopulationObj[_key6] = val;
-  }
-});
-/*
-Obiekt {natywna nazwa języka: obszar kraju}
-*/
-
 var languageAreaObj = {};
 var languageArea = [];
 Object.entries(regionObj).forEach(function (item) {
@@ -465,19 +359,34 @@ Object.entries(regionObj).forEach(function (item) {
     var languagesList = Object.values(item[1].languages);
 
     for (var i = 0; i < languagesList.length; i++) {
+      languageNumberOfCountriesObj[languagesList[i].name] = languagesList[i].countries.length;
+
+      if (languagesList[i].population) {
+        languagePopulation.push((0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])({}, languagesList[i].name, languagesList[i].population));
+        languagePopulation.forEach(function (item) {
+          for (var _i5 = 0, _Object$entries4 = Object.entries(item); _i5 < _Object$entries4.length; _i5++) {
+            var _Object$entries4$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries4[_i5], 2),
+                _key4 = _Object$entries4$_i[0],
+                val = _Object$entries4$_i[1];
+
+            languagePopulationObj[_key4] ? languagePopulationObj[_key4] += val : languagePopulationObj[_key4] = val;
+          }
+        });
+      }
+
       if (languagesList[i].area) {
         languageArea.push((0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])({}, languagesList[i].name, languagesList[i].area));
+        languageArea.forEach(function (item) {
+          for (var _i6 = 0, _Object$entries5 = Object.entries(item); _i6 < _Object$entries5.length; _i6++) {
+            var _Object$entries5$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries5[_i6], 2),
+                _key5 = _Object$entries5$_i[0],
+                val = _Object$entries5$_i[1];
+
+            languageAreaObj[_key5] ? languageAreaObj[_key5] += val : languageAreaObj[_key5] = val;
+          }
+        });
       }
     }
-  }
-});
-languageArea.forEach(function (item) {
-  for (var _i8 = 0, _Object$entries7 = Object.entries(item); _i8 < _Object$entries7.length; _i8++) {
-    var _Object$entries7$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries7[_i8], 2),
-        _key7 = _Object$entries7$_i[0],
-        val = _Object$entries7$_i[1];
-
-    languageAreaObj[_key7] ? languageAreaObj[_key7] += val : languageAreaObj[_key7] = val;
   }
 });
 var regionHighestPopulation = Object.keys(regionPopulationObj).sort(function (a, b) {
@@ -491,90 +400,90 @@ var regionThirdHighestArea = Object.keys(regionAreaObj).sort(function (a, b) {
 });
 var regionWithMinMaxNumberOfLanguages = [];
 
-for (var _i9 = 0, _Object$entries8 = Object.entries(regionNumberOfLanguagesObj); _i9 < _Object$entries8.length; _i9++) {
-  var _Object$entries8$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries8[_i9], 2),
-      _key8 = _Object$entries8$_i[0],
-      val = _Object$entries8$_i[1];
+for (var _i7 = 0, _Object$entries6 = Object.entries(regionNumberOfLanguagesObj); _i7 < _Object$entries6.length; _i7++) {
+  var _Object$entries6$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries6[_i7], 2),
+      _key6 = _Object$entries6$_i[0],
+      val = _Object$entries6$_i[1];
 
   var numberOfLanguages = Object.values(regionNumberOfLanguagesObj);
 
   if (val === Math.max.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(numberOfLanguages)) || val === Math.min.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(numberOfLanguages))) {
-    regionWithMinMaxNumberOfLanguages.push(_key8);
+    regionWithMinMaxNumberOfLanguages.push(_key6);
   }
 }
 
 ;
 var regionWithMaxNumberOfCurrencies = ''; //const nie mozna nadpisać
 
-for (var _i10 = 0, _Object$entries9 = Object.entries(regionNumberOfCurrenciesObj); _i10 < _Object$entries9.length; _i10++) {
-  var _Object$entries9$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries9[_i10], 2),
-      _key9 = _Object$entries9$_i[0],
-      _val = _Object$entries9$_i[1];
+for (var _i8 = 0, _Object$entries7 = Object.entries(regionNumberOfCurrenciesObj); _i8 < _Object$entries7.length; _i8++) {
+  var _Object$entries7$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries7[_i8], 2),
+      _key7 = _Object$entries7$_i[0],
+      _val = _Object$entries7$_i[1];
 
   var numberOfCurrencies = Object.values(regionNumberOfCurrenciesObj);
 
   if (_val === Math.max.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(numberOfCurrencies))) {
-    regionWithMaxNumberOfCurrencies = _key9;
+    regionWithMaxNumberOfCurrencies = _key7;
   }
 }
 
 ;
 var regionWithMinNumberOfCountries = '';
 
-for (var _i11 = 0, _Object$entries10 = Object.entries(regionNumberOfCountries); _i11 < _Object$entries10.length; _i11++) {
-  var _Object$entries10$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries10[_i11], 2),
-      _key10 = _Object$entries10$_i[0],
-      _val2 = _Object$entries10$_i[1];
+for (var _i9 = 0, _Object$entries8 = Object.entries(regionNumberOfCountries); _i9 < _Object$entries8.length; _i9++) {
+  var _Object$entries8$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries8[_i9], 2),
+      _key8 = _Object$entries8$_i[0],
+      _val2 = _Object$entries8$_i[1];
 
   var numberOfCountries = Object.values(regionNumberOfCountries);
 
   if (_val2 === Math.min.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(numberOfCountries))) {
-    regionWithMinNumberOfCountries = _key10;
+    regionWithMinNumberOfCountries = _key8;
   }
 }
 
 ;
 var mostPopularLanguageByCountries = '';
 
-for (var _i12 = 0, _Object$entries11 = Object.entries(languageNumberOfCountriesObj); _i12 < _Object$entries11.length; _i12++) {
-  var _Object$entries11$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries11[_i12], 2),
-      _key11 = _Object$entries11$_i[0],
-      _val3 = _Object$entries11$_i[1];
+for (var _i10 = 0, _Object$entries9 = Object.entries(languageNumberOfCountriesObj); _i10 < _Object$entries9.length; _i10++) {
+  var _Object$entries9$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries9[_i10], 2),
+      _key9 = _Object$entries9$_i[0],
+      _val3 = _Object$entries9$_i[1];
 
   var languageCountriesNumber = Object.values(languageNumberOfCountriesObj);
 
   if (_val3 === Math.max.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(languageCountriesNumber))) {
-    mostPopularLanguageByCountries = _key11;
+    mostPopularLanguageByCountries = _key9;
   }
 }
 
 ;
 var lessPopularLanguageByPeople = '';
 
-for (var _i13 = 0, _Object$entries12 = Object.entries(languagePopulationObj); _i13 < _Object$entries12.length; _i13++) {
-  var _Object$entries12$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries12[_i13], 2),
-      _key12 = _Object$entries12$_i[0],
-      _val4 = _Object$entries12$_i[1];
+for (var _i11 = 0, _Object$entries10 = Object.entries(languagePopulationObj); _i11 < _Object$entries10.length; _i11++) {
+  var _Object$entries10$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries10[_i11], 2),
+      _key10 = _Object$entries10$_i[0],
+      _val4 = _Object$entries10$_i[1];
 
   var populationNumber = Object.values(languagePopulationObj);
 
   if (_val4 === Math.min.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(populationNumber))) {
-    lessPopularLanguageByPeople = _key12;
+    lessPopularLanguageByPeople = _key10;
   }
 }
 
 ;
 var languagesOnMinMaxAreas = [];
 
-for (var _i14 = 0, _Object$entries13 = Object.entries(languageAreaObj); _i14 < _Object$entries13.length; _i14++) {
-  var _Object$entries13$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries13[_i14], 2),
-      _key13 = _Object$entries13$_i[0],
-      _val5 = _Object$entries13$_i[1];
+for (var _i12 = 0, _Object$entries11 = Object.entries(languageAreaObj); _i12 < _Object$entries11.length; _i12++) {
+  var _Object$entries11$_i = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_Object$entries11[_i12], 2),
+      _key11 = _Object$entries11$_i[0],
+      _val5 = _Object$entries11$_i[1];
 
   var areaOfLanguages = Object.values(languageAreaObj);
 
   if (_val5 === Math.max.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(areaOfLanguages)) || _val5 === Math.min.apply(Math, (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(areaOfLanguages))) {
-    languagesOnMinMaxAreas.push(_key13);
+    languagesOnMinMaxAreas.push(_key11);
   }
 }
 
@@ -926,12 +835,8 @@ console.log('%c * EU countries without letter "a" sorted desc:', 'color: #F4B10A
 Suma 5 krajów o największej populacji
 */
 
-console.log('%c * Top Five countries population sum:', 'color: #F4B10A', _task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum);
-/*
-Suma 5 krajów o największej populacji
-*/
-
-_task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum > POPULATION_LIMIT ? console.log("%c * Top Five countries population sum equals to ".concat(_task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum, " is greater than 500 mln citizens."), 'color: #F4B10A') : console.log("%c * Top Five countries population sum equals to ".concat(_task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum, " is smaller than 500 mln citizens."), 'color: #F4B10A');
+console.log('%c * Top Five countries population sum:', 'color: #F4B10A', _task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum.toLocaleString());
+_task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum > POPULATION_LIMIT ? console.log("%c * Top Five countries population sum equals to ".concat(_task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum, " is greater than 500 mln people."), 'color: #F4B10A') : console.log("%c * Top Five countries population sum equals to ".concat(_task2_task2__WEBPACK_IMPORTED_MODULE_2__.topFiveCountriesPopulationSum, " is smaller than 500 mln people."), 'color: #F4B10A');
 /*
 Utworzenie obiektu z regionami
 */

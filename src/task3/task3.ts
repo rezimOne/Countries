@@ -22,7 +22,6 @@ export const regionObj = createRegionObj(regionObjKeys);
 /*
 Funkcja dataTransferToRegionObj:
 metody do wypełniania obiektu danymi
-
 */
 const dataTransferToRegionObj = (param: string, country: Countries) => {
   regionObj[param].countries.push(country.nativeName)
