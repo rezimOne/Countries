@@ -3,7 +3,7 @@ import { countriesLocalStorage } from '../task1/task1';
 
 const { storedCountries } = countriesLocalStorage;
 
-const regionAcronyms: string[] = ['EU', 'AU', 'NAFTA', 'other'];
+const regionObjKeys: string[] = ['EU', 'AU', 'NAFTA', 'other'];
 
 const createRegionObj = (data: string[]): RegionalBlocs | {} => {
   const obj: RegionalBlocs | {} = {};
@@ -17,131 +17,66 @@ const createRegionObj = (data: string[]): RegionalBlocs | {} => {
   })
   return obj;
 };
-export const regionObj = createRegionObj(regionAcronyms);
+export const regionObj = createRegionObj(regionObjKeys);
 
-const setDataToRegionObj = (countries: Countries[]) => {
-  countries.forEach((country) => {
-    if(country.regionalBlocs){
-      for(let i=0; i < country.regionalBlocs.length; i++){
-        if (country.regionalBlocs[i].acronym === 'EU') {
-          regionObj['EU'].countries.push(country.nativeName)
-          regionObj['EU'].countries.sort().reverse();
-          regionObj['EU'].population += country.population;
-          country.currencies.forEach((countryCurrency) => {
-            if(countryCurrency.code)
-              if (!regionObj['EU'].currencies.includes(countryCurrency.code)) {
-                regionObj['EU'].currencies.push(countryCurrency.code);
-              }
-          });
-          country.languages.forEach((countryLang) => {
-            if(countryLang.iso639_1){
-              if(!regionObj['EU'].languages[countryLang.iso639_1]){
-                regionObj['EU'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                }
-              }
-              regionObj['EU'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['EU'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['EU'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['EU'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
+/*
+Funkcja dataTransferToRegionObj:
+metody do wypełniania obiektu danymi
+
+*/
+const dataTransferToRegionObj = (param: string, country: Countries) => {
+  regionObj[param].countries.push(country.nativeName)
+  regionObj[param].countries.sort().reverse();
+  regionObj[param].population += country.population;
+  if(country.currencies){
+    country.currencies.forEach((countryCurrency) => {
+      if(countryCurrency.code)
+        if (!regionObj[param].currencies.includes(countryCurrency.code)) {
+          regionObj[param].currencies.push(countryCurrency.code);
         }
-        if (country.regionalBlocs[i].acronym === 'NAFTA') {
-          regionObj['NAFTA'].countries.push(country.nativeName);
-          regionObj['NAFTA'].countries.sort().reverse();
-          regionObj['NAFTA'].population += country.population;
-          country.currencies.forEach((countryCurrency) => {
-            if(countryCurrency.code)
-              if (!regionObj['NAFTA'].currencies.includes(countryCurrency.code)) {
-                regionObj['NAFTA'].currencies.push(countryCurrency.code);
-              }
-          });
-          country.languages.forEach((countryLang) => {
-            if(countryLang.iso639_1){
-              if(!regionObj['NAFTA'].languages[countryLang.iso639_1]){
-                regionObj['NAFTA'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                }
-              }
-              regionObj['NAFTA'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['NAFTA'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['NAFTA'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['NAFTA'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
-        }
-        if (country.regionalBlocs[i].acronym === 'AU') {
-          regionObj['AU'].countries.push(country.nativeName);
-          regionObj['AU'].countries.sort().reverse();
-          regionObj['AU'].population += country.population;
-          country.currencies.forEach((countryCurrency) => {
-            if(countryCurrency.code)
-              if (!regionObj['AU'].currencies.includes(countryCurrency.code)) {
-                regionObj['AU'].currencies.push(countryCurrency.code);
-              }
-          });
-          country.languages.forEach((countryLang) => {
-            if(countryLang.iso639_1){
-              if(!regionObj['AU'].languages[countryLang.iso639_1]){
-                regionObj['AU'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                }
-              }
-              regionObj['AU'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['AU'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['AU'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['AU'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
-        }
-        else if(
-          country.regionalBlocs[i].acronym !== 'AU' &&
-          country.regionalBlocs[i].acronym !== 'EU' &&
-          country.regionalBlocs[i].acronym !== 'NAFTA'
-        ){
-          regionObj['other'].countries.push(country.nativeName);
-          regionObj['other'].countries.sort().reverse();
-          regionObj['other'].population += country.population;
-          country.currencies.forEach((countryCurrency) => {
-            if(countryCurrency.code)
-              if (!regionObj['other'].currencies.includes(countryCurrency.code)) {
-                regionObj['other'].currencies.push(countryCurrency.code);
-              }
-          });
-          country.languages.forEach((countryLang) => {
-            if(countryLang.iso639_1){
-              if(!regionObj['other'].languages[countryLang.iso639_1]){
-                regionObj['other'].languages[countryLang.iso639_1] = {
-                  countries: [],
-                  name: '',
-                  population: 0,
-                  area: 0
-                }
-              }
-              regionObj['other'].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
-              regionObj['other'].languages[countryLang.iso639_1].population += country.population;
-              regionObj['other'].languages[countryLang.iso639_1].area += country.area;
-              regionObj['other'].languages[countryLang.iso639_1].name = countryLang.nativeName;
-            }
-          });
+    });
+  }
+  country.languages.forEach((countryLang) => {
+    if(countryLang.iso639_1){
+      if(!regionObj[param].languages[countryLang.iso639_1]) {
+        regionObj[param].languages[countryLang.iso639_1] = {
+          countries: [],
+          name: '',
+          population: 0,
+          area: 0
         }
       }
+      regionObj[param].languages[countryLang.iso639_1].countries.push(country.alpha3Code);
+      regionObj[param].languages[countryLang.iso639_1].population += country.population;
+      regionObj[param].languages[countryLang.iso639_1].area += country.area;
+      regionObj[param].languages[countryLang.iso639_1].name = countryLang.nativeName;
     }
-  }
-  );
+  });
 };
-setDataToRegionObj(storedCountries);
 
+/*
+Funkcja setDataToRegionObj:
+Steruje w jaki sposob ma być wypełniony regionObj (dane krajów dla wybranego regionu oraz klucza 'other')
+*/
+const setDataToRegionObj = (countries: Countries[]) => {
+  countries.forEach(country => {
+    if(country.regionalBlocs){
+      country.regionalBlocs.forEach((item) => {
+        regionObjKeys.forEach(region => {
+          if (region !== 'other' && region === item.acronym) {
+            dataTransferToRegionObj(region, country);
+          }
+        });
+        if (item.acronym !== 'EU' && item.acronym !== 'NAFTA' && item.acronym !== 'AU'){
+          dataTransferToRegionObj('other', country);
+        }
+      })
+    } else if (!country.regionalBlocs){
+      dataTransferToRegionObj('other', country)
+    }
+  });
+}
+setDataToRegionObj(storedCountries);
 
 /*
 Obiekt {region: obszar}
@@ -191,89 +126,62 @@ const regionDensity = (...objs: any) => {
 regionDensity(regionPopulationObj, regionAreaObj);
 
 /*
-Obiekt {region: liczba języków}
+Obiekty:
+{region: liczba języków}
+{region: liczba państw członkowskich}
+{region: liczba walut}
 */
 const regionNumberOfLanguagesObj: {} = {};
-for (let [key, value] of Object.entries(regionObj)){
-  if(key !== 'other'){
-    regionNumberOfLanguagesObj[key] = Object.keys(value.languages).length;
-  }
-};
-
-/*
-Obiekt {region: liczba walut}
-*/
+const regionNumberOfCountries: {} = {};
 const regionNumberOfCurrenciesObj: {} = {};
 for (let [key, value] of Object.entries(regionObj)){
   if(key !== 'other'){
+    regionNumberOfLanguagesObj[key] = Object.keys(value.languages).length;
     regionNumberOfCurrenciesObj[key] = Object.keys(value.currencies).length;
-  }
-};
-
-/*
-Obiekt {region: liczba państw członkowskich}
-*/
-const regionNumberOfCountries: {} = {};
-for (let [key, value] of Object.entries(regionObj)){
-  if(key !== 'other'){
     regionNumberOfCountries[key] = Object.keys(value.countries).length;
   }
 };
 
 /*
-Obiekt {natywna nazwa języka: liczba krajów}
+Obiekty:
+{natywna nazwa języka: liczba krajów}
+{natywna nazwa języka: populacja}
+{natywna nazwa języka: obszar kraju}
 */
 const languageNumberOfCountriesObj: {} = {};
+const languagePopulationObj: {} = {};
+const languagePopulation: any[] = [];
+const languageAreaObj: {} = {};
+const languageArea: any[] = [];
+
 Object.entries(regionObj).forEach((item: any) => {
   if (item[0] !== 'other') {
     let languagesList: any = Object.values(item[1].languages);
     for (let i = 0; i < languagesList.length; i++) {
-      languageNumberOfCountriesObj[languagesList[i].name] = languagesList[i].countries.length;
-    }
-  }
-});
 
-/*
-Obiekt {natywna nazwa języka: populacja}
-*/
-const languagePopulationObj: {} = {};
-const languagePopulation: any[] = [];
-Object.entries(regionObj).forEach((item) => {
-  if (item[0] !== 'other') {
-    let languagesList: any = Object.values(item[1].languages);
-    for (let i = 0; i < languagesList.length; i++) {
+      languageNumberOfCountriesObj[languagesList[i].name] = languagesList[i].countries.length;
+
       if(languagesList[i].population){
         languagePopulation.push({[languagesList[i].name]: languagesList[i].population});
+        languagePopulation.forEach(item => {
+          for (let [key, val] of Object.entries(item)) {
+            (languagePopulationObj[key]) ? languagePopulationObj[key] += val: languagePopulationObj[key] = val;
+          }
+        });
+      }
+
+      if(languagesList[i].area){
+        languageArea.push({[languagesList[i].name]: languagesList[i].area});
+        languageArea.forEach(item => {
+          for (let [key, val] of Object.entries(item)) {
+            (languageAreaObj[key]) ? languageAreaObj[key] += val: languageAreaObj[key] = val;
+          }
+        });
       }
     }
-  }
-});
-languagePopulation.forEach(item => {
-  for (let [key, val] of Object.entries(item)) {
-    (languagePopulationObj[key]) ? languagePopulationObj[key] += val: languagePopulationObj[key] = val;
   }
 });
 
-/*
-Obiekt {natywna nazwa języka: obszar kraju}
-*/
-const languageAreaObj: {} = {};
-const languageArea: any[] = [];
-Object.entries(regionObj).forEach((item) => {
-  if (item[0] !== 'other') {
-    let languagesList: any = Object.values(item[1].languages);
-    for (let i = 0; i < languagesList.length; i++) {
-      if(languagesList[i].area){
-        languageArea.push({[languagesList[i].name]: languagesList[i].area});
-      }
-    }
-  }
-});
-languageArea.forEach(item => {
-  for (let [key, val] of Object.entries(item)) {
-    (languageAreaObj[key]) ? languageAreaObj[key] += val: languageAreaObj[key] = val;
-  }
-});
 
 export const regionHighestPopulation = Object.keys(regionPopulationObj).sort((a, b) => regionPopulationObj[b] - regionPopulationObj[a]);
 

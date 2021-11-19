@@ -31,14 +31,11 @@ console.log('%c * EU countries without letter "a" sorted desc:', 'color: #F4B10A
 /*
 Suma 5 krajów o największej populacji
 */
-console.log('%c * Top Five countries population sum:', 'color: #F4B10A', topFiveCountriesPopulationSum);
+console.log('%c * Top Five countries population sum:', 'color: #F4B10A', topFiveCountriesPopulationSum.toLocaleString());
 
-/*
-Suma 5 krajów o największej populacji
-*/
 (topFiveCountriesPopulationSum > POPULATION_LIMIT)
-? console.log(`%c * Top Five countries population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln citizens.`, 'color: #F4B10A')
-: console.log(`%c * Top Five countries population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln citizens.`, 'color: #F4B10A')
+? console.log(`%c * Top Five countries population sum equals to ${topFiveCountriesPopulationSum} is greater than 500 mln people.`, 'color: #F4B10A')
+: console.log(`%c * Top Five countries population sum equals to ${topFiveCountriesPopulationSum} is smaller than 500 mln people.`, 'color: #F4B10A')
 
 /*
 Utworzenie obiektu z regionami

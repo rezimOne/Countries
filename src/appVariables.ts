@@ -9,4 +9,16 @@ export const appVariables: AppVariables = {
   CURRENT_TIME: new Date().getTime(),
   INTERVAL: 100000,
   POPULATION_LIMIT: 500000000,
+  // regionObjKeyVal: {
+  //   countries: [],
+  //   currencies: [],
+  //   languages: {},
+  //   population: 0
+  // },
+  // languagesObjKeyVal:{
+  //   name: '',
+  //   countries: [],
+  //   population: 0,
+  //   area: 0
+  // }
 };
