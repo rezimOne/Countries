@@ -5,18 +5,6 @@ export interface AppVariables {
   INTERVAL: number;
   CURRENT_TIME: number;
   POPULATION_LIMIT: number;
-  // regionObjKeyVal: {
-  //   countries: string[];
-  //   population: number;
-  //   currencies: string[];
-  //   languages: {}
-  // },
-  // languagesObjKeyVal: {
-  //   name: string;
-  //   countries: string[];
-  //   population: number;
-  //   area: number;
-  // }
 };
 
 export interface LocalStorageMethods {

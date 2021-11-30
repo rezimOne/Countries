@@ -19,10 +19,6 @@ const createRegionObj = (data: string[]): RegionalBlocs | {} => {
 };
 export const regionObj = createRegionObj(regionObjKeys);
 
-/*
-Funkcja dataTransferToRegionObj:
-metody do wypełniania obiektu danymi
-*/
 const dataTransferToRegionObj = (param: string, country: Countries) => {
   regionObj[param].countries.push(country.nativeName)
   regionObj[param].countries.sort().reverse();
@@ -53,10 +49,6 @@ const dataTransferToRegionObj = (param: string, country: Countries) => {
   });
 };
 
-/*
-Funkcja setDataToRegionObj:
-Steruje w jaki sposob ma być wypełniony regionObj (dane krajów dla wybranego regionu oraz klucza 'other')
-*/
 const setDataToRegionObj = (countries: Countries[]) => {
   countries.forEach(country => {
     if(country.regionalBlocs){
@@ -77,9 +69,6 @@ const setDataToRegionObj = (countries: Countries[]) => {
 }
 setDataToRegionObj(storedCountries);
 
-/*
-Obiekt {region: obszar}
-*/
 const regionAreaObj = {};
 const regionCountryArea: {}[] = [];
 storedCountries.forEach((country) => {
@@ -99,9 +88,6 @@ regionCountryArea.forEach(item => {
   }
 });
 
-/*
-Obiekt {region: populacja}
-*/
 const regionPopulationObj: {} = {};
 for (let [key, value] of Object.entries(regionObj)){
   if(key !== 'other'){
@@ -109,9 +95,6 @@ for (let [key, value] of Object.entries(regionObj)){
   }
 };
 
-/*
-Obiekt {region: gęstość zaludnienia}
-*/
 const regionDensityObj: {} = {}
 const regionDensity = (...objs: any) => {
   objs.reduce((a: any, b: any) => {
@@ -124,12 +107,6 @@ const regionDensity = (...objs: any) => {
 };
 regionDensity(regionPopulationObj, regionAreaObj);
 
-/*
-Obiekty:
-{region: liczba języków}
-{region: liczba państw członkowskich}
-{region: liczba walut}
-*/
 const regionNumberOfLanguagesObj: {} = {};
 const regionNumberOfCountries: {} = {};
 const regionNumberOfCurrenciesObj: {} = {};
@@ -141,12 +118,6 @@ for (let [key, value] of Object.entries(regionObj)){
   }
 };
 
-/*
-Obiekty:
-{natywna nazwa języka: liczba krajów}
-{natywna nazwa języka: populacja}
-{natywna nazwa języka: obszar kraju}
-*/
 const languageNumberOfCountriesObj: {} = {};
 const languagePopulationObj: {} = {};
 const languagePopulation: any[] = [];
