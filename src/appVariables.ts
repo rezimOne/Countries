@@ -5,6 +5,6 @@ export const appVariables: AppVariables = {
   TIME_KEY: "time",
   COUNTRY_KEY: "countries",
   CURRENT_TIME: new Date().getTime(),
-  INTERVAL: 100000,
+  INTERVAL: 120000,
   POPULATION_LIMIT: 500000000,
 };

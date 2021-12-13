@@ -1,7 +1,7 @@
 import { LocalStorageMethods, LocalStorage, Countries, } from '../types';
 import { appVariables } from '../appVariables';
 
-const { TIME_KEY, COUNTRY_KEY, API_URL, CURRENT_TIME } = appVariables;
+const { TIME_KEY, COUNTRY_KEY, API_URL, CURRENT_TIME, INTERVAL } = appVariables;
 
 const localStorageMethods: LocalStorageMethods = {
   getData: (key) => localStorage.getItem(key),
@@ -16,7 +16,7 @@ export const countriesLocalStorage: LocalStorage = {
   fetchTime: Number(getData(TIME_KEY)),
   storedCountries: countriesInStorage ? JSON.parse(countriesInStorage) : null
 };
-const { storedCountries } = countriesLocalStorage;
+const { storedCountries, fetchTime } = countriesLocalStorage;
 
 export const fetchData = () => {
   fetch(API_URL)
@@ -35,6 +35,9 @@ export const fetchData = () => {
   })
   .catch((err) => console.log(err));
 }
+(!storedCountries || fetchTime + INTERVAL <= CURRENT_TIME)
+? fetchData()
+: console.log('%c * Countries from localStorage:','color: #F40AEA', storedCountries);
 
 export const countriesWithPopulationChange: string[] = [];
 const comparePopulation = (currData: Countries[], prevData: Countries[]): string[] => {

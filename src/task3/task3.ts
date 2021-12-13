@@ -58,7 +58,7 @@ const setDataToRegionObj = (countries: Countries[]) => {
             dataTransferToRegionObj(region, country);
           }
         });
-        if (item.acronym !== 'EU' && item.acronym !== 'NAFTA' && item.acronym !== 'AU'){
+        if (!['EU', 'AU', 'NAFTA'].includes(item.acronym)) {
           dataTransferToRegionObj('other', country);
         }
       })
